@@ -1,21 +1,19 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: bitcamp1
-  Date: 2024-04-08
-  Time: 오후 12:21
+  Date: 2024-04-09
+  Time: 오전 10:18
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>TodoList</title>
+    <title>Title</title>
 </head>
 <body>
-<ul>
-    <c:forEach var="dto" items="${list}">
-        <li>${dto}</li>
-    </c:forEach>
-</ul>
+    <div>${dto.tno}</div>
+    <div>${dto.title}</div>
+    <div>${dto.dueDate}</div>
+    <div>${dto.finished}</div>
 </body>
 </html>

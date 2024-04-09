@@ -62,4 +62,14 @@ public enum TodoService {
 
         return todoDTOS;
     }
+
+    public TodoDto get(Long tno){
+        TodoDto dto = new TodoDto();
+        dto.setTno(tno);
+        dto.setTitle("Sample Todo");
+        dto.setDueDate(LocalDate.now());
+        dto.setFinished(true);
+
+        return dto;
+    }
 }
