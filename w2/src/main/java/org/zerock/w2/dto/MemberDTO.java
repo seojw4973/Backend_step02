@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data       // setter, getter 모두 구현 -> VO와의 차이점
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,4 +13,5 @@ public class MemberDTO {
     private String mid;
     private String mpw;
     private String mname;
+    private String uuid;
 }
