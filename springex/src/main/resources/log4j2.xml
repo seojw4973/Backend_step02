@@ -14,13 +14,14 @@
             <appender-ref ref="console" />
         </logger>
 
-        <logger name="com.zaxxer" level="INFO" additivity="false">
+
+        <logger name="org.zerock" level="INFO" additivity="false">
             <appender-ref ref="console" />
         </logger>
 
-<!--        <logger name="org.zerock" level="INFO" additivity="false">-->
-<!--            <appender-ref ref="console" />-->
-<!--        </logger>-->
+        <logger name="com.zaxxer" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
 
         <logger name="org.zerock.springex.mapper" level="TRACE" additivity="false">
             <appender-ref ref="console" />

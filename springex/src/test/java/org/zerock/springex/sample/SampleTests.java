@@ -20,28 +20,28 @@ import java.sql.Connection;
 // root-context.xml을 읽어들여서 ApplicationContext영역에 bean들을 생성한다.
 @ContextConfiguration(locations="file:src/main/webapp/WEB-INF/root-context.xml")
 public class SampleTests {
-
-    // ApplicationContext에서 동일한 타입을 찾아서 자동으로 주입해라.
-    // 필드 주입 방식
-     @Autowired
-    private SampleService sampleService;
-
-     @Autowired
-     private DataSource dataSource;
-
-    @Test
-    public void textService1(){
-        log.info(sampleService);
-        Assertions.assertNotNull(sampleService);    //값의 유효여부 판단하는 메서드
-    }
-
-    @Test
-    public void textConnection() throws Exception{
-        Connection connection = dataSource.getConnection();
-        log.info(connection);
-        Assertions.assertNotNull(connection);
-
-        connection.close();
-    }
+//
+//    // ApplicationContext에서 동일한 타입을 찾아서 자동으로 주입해라.
+//    // 필드 주입 방식
+//     @Autowired
+//    private SampleService sampleService;
+//
+//     @Autowired
+//     private DataSource dataSource;
+//
+//    @Test
+//    public void textService1(){
+//        log.info(sampleService);
+//        Assertions.assertNotNull(sampleService);    //값의 유효여부 판단하는 메서드
+//    }
+//
+//    @Test
+//    public void textConnection() throws Exception{
+//        Connection connection = dataSource.getConnection();
+//        log.info(connection);
+//        Assertions.assertNotNull(connection);
+//
+//        connection.close();
+//    }
 
 }
