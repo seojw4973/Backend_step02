@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1 th:text="${msg}"></h1>
+
+<!-- 아래의 주석은 작동은 하지않지만 브라우저로 전달은 됨-->
+<!--    <div>-->
+<!--        <h1>AAA</h1>-->
+<!--    </div>-->
+
+<!--/* 아래처럼 주석 사용 시 작동하지도 않고, 브라우저로 전달도 되지 않음*/-->
+<!--/*    <div>*/-->
+<!--/*        <h1>AAA</h1>*/-->
+<!--/*    </div>*/-->
+
+<div th:with="num1 = ${10}, num2=${20}">
+    <h4 th:text="${num1 + num2}"></h4>
+</div>
+</body>
+</html>

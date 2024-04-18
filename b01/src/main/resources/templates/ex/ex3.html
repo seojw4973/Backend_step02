@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+                layout:decorate="~{layout/layout1.html}">
+
+<!--
+ex3.html파일을 브라우저에 전송할 때
+layout/layout1.html을 가져다가 기본 템플릿으로 정하고
+결국 layout1.html을 브라우저에 전송한다.
+
+layout1.html에서 각각 content 영역과 script영역을
+ex3.html에 있는 것으로 대체해서 전송한다.
+-->
+<div layout:fragment="content">
+    <h1>ex3.html</h1>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+    const arr= [[${arr}]]
+    console.log(arr);
+</script>
