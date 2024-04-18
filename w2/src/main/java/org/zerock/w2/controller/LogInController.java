@@ -36,9 +36,9 @@ public class LogInController extends HttpServlet {
         // login.jsp에 name=auto가 체크되어 있다면, remember는 true
         boolean rememberMe = auto !=null && auto.equals("on");
 
-        if(rememberMe){
-            String uuid = UUID.randomUUID().toString();
-        }
+//        if(rememberMe){
+//            String uuid = UUID.randomUUID().toString();
+//        }
 
         try{
             // 기존 로그인
