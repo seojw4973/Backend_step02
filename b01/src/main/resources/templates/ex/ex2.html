@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <div th:text="${list}"></div>
-    <div th:text="${map}"></div>
-    <div th:text="${dto}"></div>
+<div th:text="${list}"></div>
+<div th:text="${map}"></div>
+<div th:text="${dto}"></div>
 
-    <!-- thymeleaf가 위의객체를 자바스크립트로 전달-->
-    <script th:inline="javascript">
-        const list = [[${list}]]
-        const map = [[${map}]]
-        const dto = [[${dto}]]
+<script th:inline="javascript">
 
-        console.log(list)
-        console.log(map)
-        console.log(dto)
-    </script>
+    const list = [[${list}]]
+
+    const map = [[${map}]]
+
+    const dto = [[${dto}]]
+
+    console.log(list)
+    console.log(map)
+    console.log(dto)
+
+</script>
+
 </body>
 </html>
