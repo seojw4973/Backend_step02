@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @EntityListeners(value = { AuditingEntityListener.class })
 @Getter
 abstract class BaseEntity {
-
+    // VO의 역할
     // 데이터가 새로 생성되었을 때 시간 정보 저장
     // 수정할 때는 갱신하지 마라
     @CreatedDate

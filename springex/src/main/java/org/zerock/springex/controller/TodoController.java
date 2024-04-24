@@ -52,18 +52,17 @@ public class TodoController {
         TodoDTO 내부의 필드들의 이름과 매칭되면 todoDTO 객체 내부에 저장된다.
     * */
     @PostMapping("/register")
-    public String registerPost(@Valid TodoDTO todoDTO,
-                               BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes){
+    public String registerPost( TodoDTO todoDTO
+                               ){
         log.info("POST todo register.......");
 
         /* todoDTO의 제약조건이 오류가 발생했을때
         * */
-        if(bindingResult.hasErrors()){
-            log.info("has errors....");
-            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            return "redirect:/todo/register";
-        }
+//        if(bindingResult.hasErrors()){
+//            log.info("has errors....");
+//            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+//            return "redirect:/todo/register";
+//        }
 
         log.info(todoDTO);
 
