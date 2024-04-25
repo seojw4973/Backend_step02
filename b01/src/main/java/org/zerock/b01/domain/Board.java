@@ -3,6 +3,8 @@ package org.zerock.b01.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /* DB 논리적 설계단계에서 물리적 설계로 전환되기 전에
 물리적 Table로 생성되어야 할 논리적 묶음을 Entity라고 한다.
@@ -18,7 +20,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "imageSet")
 public class Board extends BaseEntity {
 
     /* @id는 Pk(primary Key)로 정의한다.
@@ -41,8 +43,44 @@ public class Board extends BaseEntity {
 //    @OneToMany
 //    Reply reply;
 
+    /*
+      Board         -           BoardImage
+      부모           -            자식
+      One(1)        -            Many(다)
+
+      MappedBy = "board"는
+      BoardImage의 private Board board; 필드를 FK로 지정한 것
+      @OneToMany의 불필요한 복합연결 테이블 생성을 막을 수 있다.
+
+      Cascade.ALL
+      게시판의 부모 글이 삭제되면, 소속된 자식 이미지도 삭제되도록 한다.
+    * */
+    @OneToMany(mappedBy = "board",
+                cascade = {CascadeType.ALL},
+                fetch = FetchType.LAZY)  //BoardImage의 board 변수
+    @Builder.Default
+    private Set<BoardImage> imageSet = new HashSet<>();
+
     public void change(String title, String content){
         this.title = title;
         this.content = content;
+    }
+
+    public void addImage(String uuid, String fileName){
+        BoardImage boardImage = BoardImage.builder()
+                .uuid(uuid)
+                .fileName(fileName)
+                .board(this)
+                .ord(imageSet.size())
+                .build();
+
+        imageSet.add(boardImage);
+    }
+
+    public void clearImages(){
+
+        imageSet.forEach(boardImage -> boardImage.changeBoard(null));
+
+        this.imageSet.clear();
     }
 }

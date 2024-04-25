@@ -2,10 +2,13 @@ package org.zerock.b01.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.zerock.b01.domain.Board;
 import org.zerock.b01.repository.search.BoardSearch;
+
+import java.util.Optional;
 
 /* 인터페이스를 만들고
 *  JpaRepository를 상속받는데,
@@ -37,4 +40,11 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardSearch
 //
 //    4) QueryDsl - 프로그래밍(객체, 메서드 호출) -> JPQL -> NativeQuery -> DBMS로 전달
 //
+    /* Board가 LAZY 일때
+        연결된 자식 필드인 imageSet을 @EntityGraph로 선언하면
+        아래 jpql을 실행할 때 자식테이블과의 필드 연결을 통해서 함께 조회하게 된다.
+    * */
+    @EntityGraph(attributePaths = {"imageSet"})
+    @Query("select b from Board b where b.bno=:bno")
+    Optional<Board> findByIdWithImages(Long bno);
 }
