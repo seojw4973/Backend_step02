@@ -54,10 +54,14 @@
                         </div>
                     </div>
 
-
                 </div><!--end card body-->
 
-
+                <div class="col">
+                    <div class="card" th:if="${dto.fileNames != null && dto.fileNames.size() > 0}">
+                        <img class="card-img-top"
+                             th:each="fileName: ${dto.fileNames}"
+                             th:src="|/view/${fileName}|">
+                    </div>
 
             </div><!--end card-->
         </div><!-- end col-->
@@ -133,7 +137,8 @@
 
     <script src="/js/reply.js"></script>
 
-</div>
+    </div>
+</div><!-- layout fragment end -->
 
 
 <script layout:fragment="script" th:inline="javascript">
@@ -183,11 +188,8 @@
 
     function printReplies(page,size,goLast){
 
-        // getList가 서버로 요청한 결과가 도착하면
         getList({bno, page,size, goLast}).then(
-            // PageResponseDTO<ReplyDTO> responseDTO -> json -> data에 저장
             data => {
-                // List<ReplyDTO> dtoList
                 printList(data.dtoList) //목록 처리
                 printPages(data) //페이지 처리
             }
@@ -197,7 +199,6 @@
 
     }
 
-    // templates/board/read.html이 로딩된 후 다시 서버로 요청
     printReplies(1,10, true)
 
     //댓글 등록 모달
@@ -208,26 +209,22 @@
     const replyer = document.querySelector(".replyer")
     const closeRegisterBtn = document.querySelector(".closeRegisterBtn")
 
-    // 댓글 등록창 띄우기
+
     document.querySelector(".addReplyBtn").addEventListener("click", function (e){
         registerModal.show()
     },false)
 
-    // 댓글 등록창 닫기
     closeRegisterBtn.addEventListener("click", function (e){
         registerModal.hide()
     },false)
 
-    // 댓글 등록하는 버튼
     registerBtn.addEventListener("click", function(e){
-        // bno값과 등록 modal창의 값을 js객체로 전송하기 위해서 묶는다.
         const replyObj = {
             bno:bno,
             replyText:replyText.value,
             replyer:replyer.value}
 
         addReply(replyObj).then(result => {
-            // addReply의 비동기 요청의 결과가 도착하면
             alert(result.rno)
             registerModal.hide()
             replyText.value = ''
@@ -248,7 +245,6 @@
         e.preventDefault()
         e.stopPropagation()
 
-        // 자식 요소중에 누가 실제 이벤트 발생 Element인지?
         const target = e.target
 
         if(!target || target.tagName != 'A'){
@@ -292,10 +288,8 @@
         getReply(rno).then(reply => { //댓글의 내용을 모달창에 채워서 보여주는
 
             console.log(reply)
-            // 수정 모달창의 해당부분에 정보 표시
             replyHeader.innerHTML = reply.rno
             modifyText.value = reply.replyText
-            // 모달창 표시
             modifyModal.show()
 
         }).catch(e => alert('error'))
@@ -305,7 +299,6 @@
 
     modifyBtn.addEventListener("click", function(e) {
 
-        // 수정 모달창의 정보를 읽어서 js 객체로 만든다.
         const replyObj = {
             bno:bno,
             rno:replyHeader.innerHTML,
@@ -348,6 +341,4 @@
 
 
 </script>
-
-
 

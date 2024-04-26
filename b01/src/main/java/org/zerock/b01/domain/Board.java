@@ -1,6 +1,7 @@
 package org.zerock.b01.domain;
 
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -55,10 +56,12 @@ public class Board extends BaseEntity {
       Cascade.ALL
       게시판의 부모 글이 삭제되면, 소속된 자식 이미지도 삭제되도록 한다.
     * */
-    @OneToMany(mappedBy = "board",
-                cascade = {CascadeType.ALL},
-                fetch = FetchType.LAZY)  //BoardImage의 board 변수
+    @OneToMany(mappedBy = "board",              //BoardImage의 board 변수
+                cascade = {CascadeType.ALL},    // 상위 엔티티가 변할때 하위 엔티티도 함께 변해라
+                fetch = FetchType.LAZY,
+                orphanRemoval = true)           // 상위 엔티티의 참조가 더이상 없는 상태일 경우 삭제시키기 위해
     @Builder.Default
+    @BatchSize(size = 20)       // 지정된 수를 IN 조건으로 사용(20을 부여하면 20개 단위로 묶어서 처리), OneToMany에서는 일반적으로 BatchSize를 줌
     private Set<BoardImage> imageSet = new HashSet<>();
 
     public void change(String title, String content){

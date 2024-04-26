@@ -19,7 +19,7 @@ async function get1(bno) {
 async function getList({bno, page, size, goLast}){
 
     const result = await axios.get(`/replies/list/${bno}`, {params: {page, size}})
-    // 최신 댓글을 확인하기 위한 마지막 페이지 요청
+
     if(goLast){
         const total = result.data.total
         const lastPage = parseInt(Math.ceil(total/size))

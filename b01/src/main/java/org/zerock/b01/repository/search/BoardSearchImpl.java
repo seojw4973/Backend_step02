@@ -1,6 +1,7 @@
 package org.zerock.b01.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -10,9 +11,12 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.zerock.b01.domain.Board;
 import org.zerock.b01.domain.QBoard;
 import org.zerock.b01.domain.QReply;
+import org.zerock.b01.dto.BoardImageDTO;
+import org.zerock.b01.dto.BoardListAllDTO;
 import org.zerock.b01.dto.BoardListReplyCountDTO;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardSearch {
 
@@ -201,4 +205,139 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         return new PageImpl<>(dtoList, pageable, count);
 
     }
+
+    @Override
+    public Page<BoardListAllDTO> searchWithAll(String[] types, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QReply reply = QReply.reply;
+
+        /* FROM board
+            LEFT OUTER JOIN reply  ON reply.bno = board.bno
+        * */
+        JPQLQuery<Board> boardJPQLQuery = from(board);
+        boardJPQLQuery.leftJoin(reply).on(reply.board.eq(board));
+
+        if((types!=null && types.length>0) && keyword != null){
+            BooleanBuilder booleanBuilder = new BooleanBuilder();   // (
+
+            for(String type: types){
+                switch(type){
+                    case "t":
+                        // OR board.title LIKE '%keyword%';
+                        booleanBuilder.or(board.title.contains(keyword));
+                        break;
+                    case "c":
+                        // OR board.content LIKE '%keyword%';
+                        booleanBuilder.or(board.content.contains(keyword));
+                        break;
+                    case "w":
+                        // OR board.writer LIKE '%keyword%';
+                        booleanBuilder.or(board.writer.contains(keyword));
+                        break;
+                }
+            }
+            boardJPQLQuery.where(booleanBuilder);
+            /*
+            WHERE (
+            board.title LIKE '%keyword%'
+            OR
+            board.content LIKE '%keyword%'
+            OR
+            board.writer LIKE '%keyword%'
+            )
+            * */
+        }
+
+        // GROUP BY board.bno...
+        boardJPQLQuery.groupBy(board);
+
+        // ORDER BY limit :skipRow, :getRows
+        getQuerydsl().applyPagination(pageable, boardJPQLQuery);
+
+        // SELECT board.bno, ..., COUNT(reply)
+        JPQLQuery<Tuple> tupleJPQLQuery = boardJPQLQuery.select(board, reply.countDistinct());
+
+        /*
+        SELECT board.bno, ..., COUNT(reply)
+         FROM board
+         LEFT OUTER JOIN reply  ON reply.bno = board.bno
+         WHERE (
+            board.title LIKE '%keyword%'
+            OR
+            board.content LIKE '%keyword%'
+            OR
+            board.writer LIKE '%keyword%'
+            )
+         GROUP BY board.bno...
+         ORDER BY limit :skipRow, :getRows;
+        * */
+
+        /*
+        boardJPQLQuery.select(board, reply.countDistinct()) 처럼 결과를 2개(이상) 요구하므로
+        Tuple로 받으면 여러개의 결과를 받을 수 있다.
+        * */
+        List<Tuple> tupleList = tupleJPQLQuery.fetch();
+
+        List<BoardListAllDTO> dtoList = tupleList.stream().map(tuple ->{
+            Board board1 = (Board) tuple.get(board);                // Tuple의 1번째 요소
+            long replyCount = tuple.get(1, Long.class);       // Tuple의 2번째 요소
+
+            BoardListAllDTO dto = BoardListAllDTO.builder()
+                    .bno(board1.getBno())
+                    .title(board1.getTitle())
+                    .writer(board1.getWriter())
+                    .regDate(board1.getRegDate())
+                    .replyCount(replyCount)
+                    .build();
+
+            /*
+            Board 테이블과 BoardImage테이블은
+            @OneToMany로 연결되어있으므로 Board의 필드를 통해서 가져올 수 있다.
+
+            SELECT *
+             FROM boardImage
+             WHERE boardImage.bno = :bno;
+            * */
+            List<BoardImageDTO> imageDTOS = board1.getImageSet().stream().sorted()
+                    .map(boardImage -> BoardImageDTO.builder()
+                            .uuid(boardImage.getUuid())
+                            .fileName(boardImage.getFileName())
+                            .ord(boardImage.getOrd())
+                            .build())
+                    .collect(Collectors.toList());
+
+            // BoardDTO에 BoardImage의 List까지 모두 저장함
+            dto.setBoardImages(imageDTOS);
+
+            return dto;
+        }).collect(Collectors.toList());
+
+        // 현재 pagiNation이 적용된 Board의 조회한 row전에 갯수
+        long totalCount = boardJPQLQuery.fetchCount();
+
+        // Board(replyCount, BoardImageList), 페이징 처리 정보, 전체 갯수
+        return new PageImpl<>(dtoList, pageable, totalCount);
+    }
+
+//    @Override
+//    public Page<BoardListReplyCountDTO> searchWithAll(String[] types, String keyword, Pageable pageable) {
+//        QBoard board = QBoard.board;
+//        QReply reply = QReply.reply;
+//
+//        JPQLQuery<Board> boardJPQLQuery = from(board);
+//        boardJPQLQuery.leftJoin(reply).on(reply.board.eq(board));
+//
+//        getQuerydsl().applyPagination(pageable, boardJPQLQuery);
+//
+//        List<Board> boardList = boardJPQLQuery.fetch();
+//
+//        boardList.forEach(board1->{
+//            System.out.println(board1.getBno());
+//            System.out.println(board1.getImageSet());
+//            System.out.println("-------------------");
+//        });
+//
+//        return null;
+//    }
+
 }
